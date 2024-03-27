@@ -5,7 +5,8 @@ m=0
 @3          
 d=m
 @1         
-d=d-m       
+d=d-m
+(a label)    
 d;jeq      
 @2         
 d=m

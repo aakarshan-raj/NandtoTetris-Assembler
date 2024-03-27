@@ -108,9 +108,35 @@ struct typec_instruction
     }
   }
 
-  std::string get_instruction(){
-    return comp_map[comp]+dest_map[dest]+jump_map[jump];
+  std::string get_instruction()
+  {
+    return comp_map[comp] + dest_map[dest] + jump_map[jump];
   }
+};
+
+std::map<std::string, int> symbol_table = {
+    {"r0", 0},
+    {"r1", 1},
+    {"r2", 2},
+    {"r3", 3},
+    {"r4", 4},
+    {"r5", 5},
+    {"r6", 6},
+    {"r7", 7},
+    {"r8", 8},
+    {"r9", 9},
+    {"r10", 10},
+    {"r11", 11},
+    {"r12", 12},
+    {"r13", 13},
+    {"r14", 14},
+    {"r15", 15},
+    {"r16", 16},
+    {"sp", 0},
+    {"lcl", 1},
+    {"arg", 2},
+    {"this", 3},
+    {"that", 4},
 };
 
 int main()
@@ -123,30 +149,47 @@ int main()
 
   std::string output_string;
   std::string output_line;
+
+  // First Pass
+  int num_of_lines = -1;
   while (file >> line)
   {
-    if (line[0] == '@')
+    if (line[0] == '(')      //TODO register label
     {
-      // Type A
-      int num = std::stoi(line.substr(1, line.length() - 1));
-      std::string type_a = dec_to_binary(num);
-      output_line.append(type_a);
-      output_line.insert(0, "0");
+      std::cout<<line;
     }
     else
     {
-      // Type C
-      typec_instruction ins(line);
-      output_line.append(ins.get_instruction());
-      output_line.insert(0,"111");
+      num_of_lines++;      // dont increase when its a label
     }
-    output_string.append(output_line);
-    output_string.append("\n");
-    output_line = "";
   }
-  output << output_string;
-  file.close();
-  output.close();
+
+
+  // Second Pass
+  // while (file >> line)
+  // {
+  //   if (line[0] == '@')
+  //   {
+  //     // Type A
+  //     int num = std::stoi(line.substr(1, line.length() - 1));
+  //     std::string type_a = dec_to_binary(num);
+  //     output_line.append(type_a);
+  //     output_line.insert(0, "0");
+  //   }
+  //   else
+  //   {
+  //     // Type C
+  //     typec_instruction ins(line);
+  //     output_line.append(ins.get_instruction());
+  //     output_line.insert(0, "111");
+  //   }
+  //   output_string.append(output_line);
+  //   output_string.append("\n");
+  //   output_line = "";
+  // }
+  // output << output_string;
+  // file.close();
+  // output.close();
 }
 
 std::string dec_to_binary(int n)
