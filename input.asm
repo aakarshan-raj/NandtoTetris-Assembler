@@ -6,7 +6,7 @@ m=0
 d=m
 @1         
 d=d-m
-(a label)    
+(alabel)    
 d;jeq      
 @2         
 d=m

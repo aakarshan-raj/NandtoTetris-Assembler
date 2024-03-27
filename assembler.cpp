@@ -154,17 +154,20 @@ int main()
   int num_of_lines = -1;
   while (file >> line)
   {
-    if (line[0] == '(')      //TODO register label
+    if (line[0] == '(')
     {
-      std::cout<<line;
+      symbol_table[line.substr(1, line.length() - 2)] = num_of_lines + 1;
     }
     else
     {
-      num_of_lines++;      // dont increase when its a label
+      num_of_lines++; // dont increase when its a label
     }
   }
 
-
+  for (const auto &x : symbol_table)
+  {
+    std::cout << x.first << ":" << x.second << std::endl;
+  }
   // Second Pass
   // while (file >> line)
   // {
