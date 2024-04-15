@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 
+int VARIABLE_ADDRESS = 16;
+
 std::string dec_to_binary(int);
 
 struct typec_instruction
@@ -139,6 +141,16 @@ std::map<std::string, int> symbol_table = {
     {"that", 4},
 };
 
+int getValue(std::string key)
+{
+  return symbol_table[key];
+}
+
+int insertVariable(std::string key){
+  int value = getValue(key);
+  std::cout<<"UMM"<<value;
+}
+
 int main()
 {
 
@@ -164,35 +176,55 @@ int main()
     }
   }
 
+  file.close();
+  file.open("input.asm");
+  line.clear();
+
   for (const auto &x : symbol_table)
   {
     std::cout << x.first << ":" << x.second << std::endl;
   }
+
   // Second Pass
-  // while (file >> line)
-  // {
-  //   if (line[0] == '@')
-  //   {
-  //     // Type A
-  //     int num = std::stoi(line.substr(1, line.length() - 1));
-  //     std::string type_a = dec_to_binary(num);
-  //     output_line.append(type_a);
-  //     output_line.insert(0, "0");
-  //   }
-  //   else
-  //   {
-  //     // Type C
-  //     typec_instruction ins(line);
-  //     output_line.append(ins.get_instruction());
-  //     output_line.insert(0, "111");
-  //   }
-  //   output_string.append(output_line);
-  //   output_string.append("\n");
-  //   output_line = "";
-  // }
-  // output << output_string;
-  // file.close();
-  // output.close();
+  while (file >> line)
+  {
+    if (line[0] == '@')
+    {
+      // Type A
+      int num = 0;
+      try
+      {
+        num = std::stoi(line.substr(1, line.length() - 1)); // Error if its a string
+      }
+      catch (std::invalid_argument x)
+      {
+        insertVariable(line.substr(1, line.length() - 2));     // TODO, handle variable
+      }
+      std::string type_a = dec_to_binary(num);
+      output_line.append(type_a);
+      output_line.insert(0, "0");
+    }
+    else if (line[0] == '(') // For labels
+    {
+      int value = getValue(line.substr(1, line.length() - 2));
+      std::string type_a = dec_to_binary(value);
+      output_line.append(type_a);
+      output_line.insert(0, "0");
+    }
+    else
+    {
+      // Type C
+      typec_instruction ins(line);
+      output_line.append(ins.get_instruction());
+      output_line.insert(0, "111");
+    }
+    output_string.append(output_line);
+    output_string.append("\n");
+    output_line = "";
+  }
+  output << output_string;
+  file.close();
+  output.close();
 }
 
 std::string dec_to_binary(int n)
