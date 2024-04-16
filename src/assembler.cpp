@@ -154,39 +154,15 @@ int insertVariable(std::string key)
   auto it = symbol_table.find(key);
   if (it != symbol_table.end())
   {
-    std::cout << "Exists" << key << ":" << it->second << std::endl;
     return it->second;
   }
   else
   {
-    std::cout << " doesnt Exists" << key << ":" << VARIABLE_ADDRESS << std::endl;
     symbol_table[key] = VARIABLE_ADDRESS;
     return VARIABLE_ADDRESS++;
   }
 }
 
-int ignoreWhiteSpace(std::string &str)
-{
-  int end = 0;
-  for (int i = 0; i < str.length(); i++)
-  {
-    if (str[i] == ' ' || str[i] == '\n')
-    {
-      end = i - 1;
-    }
-  }
-  return end;
-}
-
-void trimWhitespace(std::string &str) {
-    size_t firstSpacePos = str.find(' ');
-    
-    if (firstSpacePos != std::string::npos) {
-        str.erase(str.begin() + firstSpacePos, str.end());
-    } else {
-        str.erase(str.find_last_not_of(" \t\n\r\f\v") + 1);
-    }
-}
 int main()
 {
 
@@ -197,19 +173,19 @@ int main()
 
   std::string output_string;
   std::string output_line;
+  std::string full_line;
 
   // First Pass
   int num_of_lines = -1;
-  while (getline(file, line))
+  while (file >> line)
   {
-    if (line[0] == '/' || line.empty())
+    if (line[0] == '/')
     {
+      getline(file, full_line);
       continue;
     }
     else if (line[0] == '(')
     {
-      trimWhitespace(line);
-      std::cout << line.substr(1, line.length() - 1) << std::endl;
       symbol_table[line.substr(1, line.length() - 2)] = num_of_lines + 1;
     }
     else
@@ -223,10 +199,11 @@ int main()
   line.clear();
 
   // Second Pass
-  while (getline(file, line))
+  while (file >> line)
   {
-    if (line[0] == '/' || line.empty())
+    if (line[0] == '/')
     {
+      getline(file, full_line);
       continue;
     }
     else if (line[0] == '@')
@@ -239,8 +216,7 @@ int main()
       }
       catch (std::invalid_argument x)
       {
-        trimWhitespace(line);
-        num = insertVariable(line.substr(1, line.length()));
+        num = insertVariable(line.substr(1, line.length() - 1));
       }
       std::string type_a = dec_to_binary(num);
       output_line.append(type_a);
@@ -253,7 +229,6 @@ int main()
     else
     {
       // Type C
-      trimWhitespace(line);
       typec_instruction ins(line);
       output_line.append(ins.get_instruction());
       output_line.insert(0, "111");
