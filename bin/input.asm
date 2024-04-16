@@ -1,54 +1,36 @@
-(MAIN)
-@KBD
-D=M
-@WHITE
-D;JEQ
-@SCREEN
-D=A
-@R0
-M=D
-(LOOP_BLACK)
-@24576
-D=A
-@R0
-D=D-M
-@MAIN
-D;JEQ
-@R0
-D=M 
-A=D
-M=-1
-@R0
-A=M+1
-D=A
-@R0 
-M=D
-@LOOP_BLACK
-0;JMP
-@MAIN
-0;JMP
-(WHITE)
-@SCREEN
-D=A
-@R0
-M=D
-(LOOP_WHITE)
-@24576
-D=A
-@R0
-D=D-M
-@MAIN
-D;JEQ
-@R0
-D=M 
-A=D
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/04/Mult.asm
+
+// Multiplies R0 and R1 and stores the result in R2.
+// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
+//
+// This program only needs to handle arguments that satisfy
+// R0 >= 0, R1 >= 0, and R0*R1 < 32768.
+
+// Put your code here.
+ @2
 M=0
-@R0
-A=M+1
-D=A
-@R0 
-M=D
-@LOOP_WHITE
+@3        
+M=0         // INITIALISE I
+(LOOP)    
+@3          // LOAD I
+D=M
+@1          // LOAD N (R1)
+D=D-M       
+@END
+D;JEQ      
+@2         // LOAD RESULT REG
+D=M
+@0
+D=D+M      // INCR REGISTER REG BY R0 VALUE
+@2
+M=D        // STORE RESULT
+@3
+M=M+1      // INCREMENT I
+@LOOP
 0;JMP
-@MAIN
+(END)        
+@END
 0;JMP
