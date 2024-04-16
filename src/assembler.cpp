@@ -173,12 +173,18 @@ int main()
 
   std::string output_string;
   std::string output_line;
+  std::string full_line;
 
   // First Pass
   int num_of_lines = -1;
   while (file >> line)
   {
-    if (line[0] == '(')
+    if (line[0] == '/')
+    {
+      getline(file, full_line);
+      continue;
+    }
+    else if (line[0] == '(')
     {
       symbol_table[line.substr(1, line.length() - 2)] = num_of_lines + 1;
     }
@@ -195,7 +201,12 @@ int main()
   // Second Pass
   while (file >> line)
   {
-    if (line[0] == '@')
+    if (line[0] == '/')
+    {
+      getline(file, full_line);
+      continue;
+    }
+    else if (line[0] == '@')
     {
       // Type A
       int num = 0;
