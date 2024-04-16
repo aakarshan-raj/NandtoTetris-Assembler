@@ -12,63 +12,63 @@ struct typec_instruction
 
   std::map<std::string, std::string> dest_map = {
       {"", "000"},
-      {"m", "001"},
-      {"d", "010"},
-      {"md", "011"},
-      {"a", "100"},
-      {"am", "101"},
-      {"ad", "110"},
-      {"amd", "111"},
+      {"M", "001"},
+      {"D", "010"},
+      {"MD", "011"},
+      {"A", "100"},
+      {"AM", "101"},
+      {"AD", "110"},
+      {"AMD", "111"},
   };
   std::map<std::string, std::string> comp_map = {
       {"0", "0101010"},
       {"1", "0111111"},
       {"-1", "0111010"},
-      {"d", "0001100"},
-      {"a", "0110000"},
-      {"!d", "0001101"},
-      {"!a", "0110001"},
-      {"-d", "0001111"},
-      {"-a", "0110011"},
-      {"d+1", "0011111"},
-      {"a+1", "0110111"},
-      {"d-1", "0001110"},
-      {"a-1", "0110010"},
-      {"d+a", "0000010"},
-      {"d-a", "0010011"},
-      {"a-d", "00000111"},
-      {"d&a", "0000000"},
-      {"d|a", "0010101"},
+      {"D", "0001100"},
+      {"A", "0110000"},
+      {"!D", "0001101"},
+      {"!A", "0110001"},
+      {"-D", "0001111"},
+      {"-A", "0110011"},
+      {"D+1", "0011111"},
+      {"A+1", "0110111"},
+      {"D-1", "0001110"},
+      {"A-1", "0110010"},
+      {"D+A", "0000010"},
+      {"D-A", "0010011"},
+      {"A-D", "00000111"},
+      {"D&A", "0000000"},
+      {"D|A", "0010101"},
 
       {"", "1101010"},
       {"", "1111111"},
       {"", "1111010"},
       {"", "1001100"},
-      {"m", "1110000"},
+      {"M", "1110000"},
       {"", "1001101"},
-      {"!m", "1110001"},
+      {"!M", "1110001"},
       {"", "1001111"},
-      {"-m", "1110011"},
+      {"-M", "1110011"},
       {"", "1011111"},
-      {"m+1", "1110111"},
+      {"M+1", "1110111"},
       {"", "1001110"},
-      {"m-1", "1110010"},
-      {"d+m", "1000010"},
-      {"d-m", "1010011"},
-      {"m-d", "1000111"},
-      {"d&m", "1000000"},
-      {"d|m", "1010101"},
+      {"M-1", "1110010"},
+      {"D+M", "1000010"},
+      {"D-M", "1010011"},
+      {"M-D", "1000111"},
+      {"D&M", "1000000"},
+      {"D|M", "1010101"},
 
   };
   std::map<std::string, std::string> jump_map = {
       {"", "000"},
-      {"jgt", "001"},
-      {"jeq", "010"},
-      {"jge", "011"},
-      {"jlt", "100"},
-      {"jne", "101"},
-      {"jle", "110"},
-      {"jmp", "111"},
+      {"JGT", "001"},
+      {"JEQ", "010"},
+      {"JGE", "011"},
+      {"JLT", "100"},
+      {"JNE", "101"},
+      {"JLE", "110"},
+      {"JMP", "111"},
   };
   ;
 
@@ -117,28 +117,31 @@ struct typec_instruction
 };
 
 std::map<std::string, int> symbol_table = {
-    {"r0", 0},
-    {"r1", 1},
-    {"r2", 2},
-    {"r3", 3},
-    {"r4", 4},
-    {"r5", 5},
-    {"r6", 6},
-    {"r7", 7},
-    {"r8", 8},
-    {"r9", 9},
-    {"r10", 10},
-    {"r11", 11},
-    {"r12", 12},
-    {"r13", 13},
-    {"r14", 14},
-    {"r15", 15},
-    {"r16", 16},
-    {"sp", 0},
-    {"lcl", 1},
-    {"arg", 2},
-    {"this", 3},
-    {"that", 4},
+    {"R0", 0},
+    {"R1", 1},
+    {"R2", 2},
+    {"R3", 3},
+    {"R4", 4},
+    {"R5", 5},
+    {"R6", 6},
+    {"R7", 7},
+    {"R8", 8},
+    {"R9", 9},
+    {"R10", 10},
+    {"R11", 11},
+    {"R12", 12},
+    {"R13", 13},
+    {"R14", 14},
+    {"R15", 15},
+    {"R16", 16},
+    {"SP", 0},
+    {"LCL", 1},
+    {"ARG", 2},
+    {"THIS", 3},
+    {"THAT", 4},
+    {"SCREEN", 16384},
+    {"KBD", 24576},
+
 };
 
 int getValue(std::string key)
@@ -146,9 +149,18 @@ int getValue(std::string key)
   return symbol_table[key];
 }
 
-int insertVariable(std::string key){
-  int value = getValue(key);
-  std::cout<<"UMM"<<value;
+int insertVariable(std::string key)
+{
+  auto it = symbol_table.find(key);
+  if (it != symbol_table.end())
+  {
+    return it->second;
+  }
+  else
+  {
+    symbol_table[key] = VARIABLE_ADDRESS;
+    return VARIABLE_ADDRESS++;
+  }
 }
 
 int main()
@@ -172,18 +184,13 @@ int main()
     }
     else
     {
-      num_of_lines++; // dont increase when its a label
+      num_of_lines++;
     }
   }
 
   file.close();
   file.open("input.asm");
   line.clear();
-
-  for (const auto &x : symbol_table)
-  {
-    std::cout << x.first << ":" << x.second << std::endl;
-  }
 
   // Second Pass
   while (file >> line)
@@ -194,22 +201,19 @@ int main()
       int num = 0;
       try
       {
-        num = std::stoi(line.substr(1, line.length() - 1)); // Error if its a string
+        num = std::stoi(line.substr(1, line.length() - 1));
       }
       catch (std::invalid_argument x)
       {
-        insertVariable(line.substr(1, line.length() - 2));     // TODO, handle variable
+        num = insertVariable(line.substr(1, line.length() - 2));
       }
       std::string type_a = dec_to_binary(num);
       output_line.append(type_a);
       output_line.insert(0, "0");
     }
-    else if (line[0] == '(') // For labels
+    else if (line[0] == '(')
     {
-      int value = getValue(line.substr(1, line.length() - 2));
-      std::string type_a = dec_to_binary(value);
-      output_line.append(type_a);
-      output_line.insert(0, "0");
+      continue;
     }
     else
     {
