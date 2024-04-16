@@ -205,7 +205,7 @@ int main()
       }
       catch (std::invalid_argument x)
       {
-        num = insertVariable(line.substr(1, line.length() - 2));
+        num = insertVariable(line.substr(1, line.length() - 1));
       }
       std::string type_a = dec_to_binary(num);
       output_line.append(type_a);
